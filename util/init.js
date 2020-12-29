@@ -1,23 +1,32 @@
-const body = require('koa-body')
 const fs = require('fs')
-const Router = require('koa-router')
+const body = require('koa-body')
+const Redis = require('ioredis')
 
-class initialConfig {
+const { redisDefault } = require('../config/configDefault')
+
+const getRequest = require('./getRequest')
+
+class initProject {
   static init(app) {
-    this.routerInit(app)
-    this.otherInit(app)
+    this.initOther(app)
+    app.use(getRequest)
+    app.use(this.initRedis)
+    this.initRouter(app)
   }
-  //注册路由
-  static routerInit(app) {
+  static initOther(app) {
+    app.use(body())
+  }
+  static async initRedis(ctx, next) {
+    const redis = new Redis(redisDefault)
+    ctx.redis = redis
+    await next()
+  }
+  static initRouter(app) {
     fs.readdirSync('routes').forEach((item) => {
       const router = require(`../routes/${item}`)
       app.use(router.routes(), router.allowedMethods())
     })
   }
-  //其他初始化
-  static otherInit(app) {
-    app.use(body())
-  }
 }
 
-module.exports = initialConfig
+module.exports = initProject

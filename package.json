@@ -1,0 +1,37 @@
+{
+  "name": "y",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=dev ./node_modules/.bin/nodemon bin/www",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qiu-peng20/koa2-lottery.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qiu-peng20/koa2-lottery/issues"
+  },
+  "homepage": "https://github.com/qiu-peng20/koa2-lottery#readme",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "nodemon": "^2.0.6",
+    "sequelize-cli": "^6.2.0"
+  },
+  "dependencies": {
+    "debug": "^4.3.1",
+    "ioredis": "^4.19.4",
+    "joi": "^17.3.0",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.13.0",
+    "koa-body": "^4.2.0",
+    "koa-router": "^10.0.0",
+    "koa-static": "^5.0.0",
+    "mysql2": "^2.2.5",
+    "sequelize": "^6.3.5"
+  }
+}
