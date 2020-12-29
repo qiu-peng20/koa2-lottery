@@ -15,6 +15,7 @@ class initProject {
   }
   static initOther(app) {
     app.use(body())
+    
   }
   static async initRedis(ctx, next) {
     const redis = new Redis(redisDefault)

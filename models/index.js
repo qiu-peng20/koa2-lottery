@@ -40,6 +40,15 @@ Object.keys(db).forEach((modelName) => {
   }
 })
 
+
+// 第一次同步模型的时候打开
+// async function a () {
+//   await sequelize.sync({ force: true });
+//   console.log("所有模型均已成功同步.");
+// }
+// a()
+
+
 db.sequelize = sequelize
 db.Sequelize = Sequelize
 
