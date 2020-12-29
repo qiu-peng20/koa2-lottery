@@ -1,1 +1,1 @@
-"# koa2-lottery" 
+"# lottery" 
