@@ -6,6 +6,7 @@ const { Coupon } = db.sequelize.models
 const { successExpection } = require('../util/httpExpection')
 const { prizeExpection } = require('../util/httpExpection')
 const switchData = require('../cora/switch')
+const prizeService = require('../service/prize_service')
 
 class couponService {
   async checkCoupon(ctx, next) {
@@ -34,12 +35,15 @@ class couponService {
           status: 2,
         })
         switchData(2)
+        prizeService.upData(ctx)
         break
       case 0:
         switchData(0)
+        prizeService.upData(ctx)
         break
       case 1:
         switchData(1)
+        prizeService.upData(ctx)
         break
     }
 

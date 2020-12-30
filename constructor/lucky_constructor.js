@@ -27,7 +27,6 @@ class luckyConstructor {
       list.forEach((item) => {
         prizeList.push(item.dataValues)
       })
-
       prizeService.setData(ctx, prizeList)
     }
     let it

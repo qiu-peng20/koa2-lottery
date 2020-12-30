@@ -10,11 +10,6 @@ class SessionConstructor {
       name: Joi.string().alphanum().min(4).max(20).required(),
       password: Joi.string().regex(/^[A-Z]/),
     })
-    try {
-      await scheme.validateAsync({ name, password })
-    } catch (error) {
-      throw new loginExpection(error.details[0].message, 10002)
-    }
     if (name !== 'test1') {
       throw new loginExpection()
     }

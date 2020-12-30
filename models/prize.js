@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       prize_num: { type: DataTypes.INTEGER, comment: '奖品数量' }, //0 无奖品，>0限量，<0无限量
       left_num: { type: DataTypes.INTEGER, comment: '剩余奖品数量' },
       prize_code: { type: DataTypes.STRING, comment: '中奖的概率' }, //0~9999
-      prize_time: { type: DataTypes.INTEGER, comment: '发奖周期' },
+      prize_time: { type: DataTypes.INTEGER, comment: '发奖周期' }, //多小个小时之后发奖
       img: { type: DataTypes.STRING, comment: '奖品图片' },
       displayOrder: { type: DataTypes.INTEGER, comment: '位置序号' }, //小的排在前面
       gType: {
