@@ -21,14 +21,13 @@ class usersignService {
           day: nowTime,
         },
       })
-      console.log(123,typeof it)
-      // if (usersign && usersign.num > maxNum) {
-      //   throw new userExpection()
-      // }
-    // }else {
-    //   if (it > maxNum) {
-    //     throw new userExpection()
-    //   }
+      if (it && it[0].dataValues.num > maxNum) {
+        throw new userExpection()
+      }
+    }else {
+      if (it > maxNum) {
+        throw new userExpection()
+      }
     }
     
     await next()
