@@ -42,8 +42,6 @@ module.exports = (sequelize, DataTypes) => {
         comment: '奖品类型',
       }, //3 虚拟币，2 虚拟卷，1 实物 小，0 实物 大
       prize_data: { type: DataTypes.TEXT, comment: '发奖计划' }, // {[时间1， 数量1]}
-      prize_begin: { type: DataTypes.DATE, comment: '发奖周期开始时间' },
-      prize_end: { type: DataTypes.DATE, comment: '发奖周期结束时间' },
       sys_status: {
         type: DataTypes.INTEGER,
         set(val) {

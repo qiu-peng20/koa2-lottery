@@ -21,24 +21,35 @@ class couponService {
     }
     await next()
   }
-  async createData(ctx,id) {
+  async createData(ctx, id, num) {
     let list = []
-    for (let index = 0; index < ctx.v.prize_num; index++) {
-      list.push(
-        {
-          code: 123123123,
-          status: 0,
-          gift_id: id,
-        }
-      )
+    for (let index = 0; index < num; index++) {
+      list.push({
+        code: 123123123,
+        status: 0,
+        gift_id: id,
+      })
     }
     const data = await Coupon.bulkCreate(list)
-    data.forEach(async item => {
-      await ctx.redis.sadd('allSet',item.dataValues.id)
-    });
+    data.forEach(async (item) => {
+      await ctx.redis.sadd('allSet', item.dataValues.id)
+    })
     ctx.body = data
   }
-
+  async upDateData(ctx, num) {
+    await Coupon.update(
+      { status: 1 },
+      {
+        where: {
+          status: 0,
+        },
+        limit: num,
+      }
+    )
+    for (let index = 0; index < num; index++) {
+      await ctx.redis.spop('allSet')
+    }
+  }
   async setCoupon(ctx, next) {
     switch (ctx.it.gType) {
       case 2:
@@ -74,9 +85,7 @@ class couponService {
     await next()
   }
 
-  async findCoupon (ctx, next) {
-
-  }
+  async findCoupon(ctx, next) {}
 }
 
 module.exports = new couponService()

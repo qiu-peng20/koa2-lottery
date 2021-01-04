@@ -20,7 +20,7 @@ class PrizeContructor {
   async getDetail(ctx) {}
   async createData(ctx) {
     await prizeService.checkPrize(ctx) //初步检测
-    const { title, prize_num, prize_time, time_begin,gType} = ctx.v
+    const { title, prize_num, prize_time, time_begin, gType } = ctx.v
     const it = await Prize.findOne({
       where: {
         title,
@@ -33,15 +33,15 @@ class PrizeContructor {
     if (prize_num > 0) {
       data.dataValues.left_num = prize_num
     }
-    if (prize_time > 0 ) {
+    if (prize_time > 0) {
       const time = new Date(time_begin)
-      time.setDate(time.getDate()+ prize_time)
+      time.setDate(time.getDate() + prize_time)
       data.dataValues.time_end = time
     }
     prizeService.resetPrizeData(data)
-    const item =  await data.save()
+    const item = await data.save()
     if (gType === 'virtual_volume') {
-      couponService.createData(ctx, item.dataValues.id)
+      couponService.createData(ctx, item.dataValues.id, prize_num)
     }
 
     prizeService.upData(ctx)
@@ -66,17 +66,25 @@ class PrizeContructor {
     if (prize_num && prize_num >= 0) {
       ctx.v.left_num = prize_num
     }
-    const it =  await Prize.beforeUpdate((h)=>{
+    const it = await Prize.beforeUpdate((h) => {
       prizeService.resetPrizeData(h)
     })
     it.update(ctx.v, {
-      where:{
-        id: data.id
+      where: {
+        id: data.id,
       },
-      individualHooks: true
+      individualHooks: true,
     })
-    await Prize.afterUpdate((t)=>{
-      console.log(t)
+    await Prize.afterUpdate((t) => {
+      if (t.dataValues.gType === 2 && t._previousDataValues.gType === 2) {
+        if (t.dataValues.prize_num >= t._previousDataValues.prize_num) {
+          const d = t.dataValues.prize_num - t._previousDataValues.prize_num
+          couponService.createData(ctx, t.dataValues.id, d)
+        } else {
+          const d = t._previousDataValues.prize_num - t.dataValues.prize_num
+          couponService.upDateData(ctx, d)
+        }
+      }
     })
     prizeService.upData(ctx)
     throw new successExpection()
