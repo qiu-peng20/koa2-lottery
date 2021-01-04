@@ -21,7 +21,23 @@ class couponService {
     }
     await next()
   }
-
+  async createData(ctx,id) {
+    let list = []
+    for (let index = 0; index < ctx.v.prize_num; index++) {
+      list.push(
+        {
+          code: 123123123,
+          status: 0,
+          gift_id: id,
+        }
+      )
+    }
+    const data = await Coupon.bulkCreate(list)
+    data.forEach(async item => {
+      await ctx.redis.sadd('allSet',item.dataValues.id)
+    });
+    ctx.body = data
+  }
 
   async setCoupon(ctx, next) {
     switch (ctx.it.gType) {

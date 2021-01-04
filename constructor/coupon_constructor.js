@@ -5,22 +5,6 @@ const { Coupon, Prize } = db.sequelize.models
 const couponService = require('../service/coupon_service')
 
 class couponConstructor {
-  async createData(ctx, next) {
-    await couponService.checkCoupon(ctx, next)
-    const data = await Coupon.create({
-      code: ctx.v.code,
-      status: 0,
-      gift_id: ctx.prize.dataValues.id,
-    })
-    const it = await Prize.findOne({
-      where: {
-        id: ctx.prize.dataValues.id,
-      },
-    })
-    it.increment(['prize_num', 'left_num'])
-    await ctx.redis.sadd('allSet',data.dataValues.id)
-    ctx.body = data
-  }
 
   async setRCoupon(ctx) {
     const data = await Coupon.findAll({

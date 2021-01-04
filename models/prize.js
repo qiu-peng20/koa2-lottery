@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
       prize_num: { type: DataTypes.INTEGER, comment: '奖品数量' }, //0 无奖品，>0限量，<0无限量
       left_num: { type: DataTypes.INTEGER, comment: '剩余奖品数量' },
       prize_code: { type: DataTypes.STRING, comment: '中奖的概率' }, //0~9999
-      prize_time: { type: DataTypes.INTEGER, comment: '发奖周期' }, //多少天之后发奖
+      prize_time: { type: DataTypes.INTEGER, comment: '发奖周期' }, //抽奖活动持续多少天
       img: { type: DataTypes.STRING, comment: '奖品图片' },
       displayOrder: { type: DataTypes.INTEGER, comment: '位置序号' }, //小的排在前面
       gType: {
@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         comment: '奖品类型',
       }, //3 虚拟币，2 虚拟卷，1 实物 小，0 实物 大
-      prize_data: { type: DataTypes.JSON, comment: '发奖计划' }, // {[时间1， 数量1]}
+      prize_data: { type: DataTypes.TEXT, comment: '发奖计划' }, // {[时间1， 数量1]}
       prize_begin: { type: DataTypes.DATE, comment: '发奖周期开始时间' },
       prize_end: { type: DataTypes.DATE, comment: '发奖周期结束时间' },
       sys_status: {
