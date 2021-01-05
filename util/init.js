@@ -1,6 +1,7 @@
 const fs = require('fs')
 const body = require('koa-body')
 const Redis = require('ioredis')
+const runOne = require('../cora/runOne')
 
 const { redisDefault } = require('../config/configDefault')
 
@@ -11,11 +12,11 @@ class initProject {
     this.initOther(app)
     app.use(getRequest)
     app.use(this.initRedis)
+    app.use(runOne)
     this.initRouter(app)
   }
   static initOther(app) {
     app.use(body())
-    
   }
   static async initRedis(ctx, next) {
     const redis = new Redis(redisDefault)

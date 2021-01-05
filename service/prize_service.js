@@ -140,54 +140,55 @@ class prizeService {
   }
   //设置奖品池
   async setPrizePool(ctx) {
-      let totalNum = 0
-      
-      const data  = await Prize.findAll({
-        where: {
-          sys_status: 'normal',
-          time_begin: {
-            [Op.lte]: Time,
-          },
-          time_end: {
-            [Op.gte]: Time,
-          },
+    const data  = await Prize.findAll({
+      where: {
+        sys_status: 'normal',
+        time_begin: {
+          [Op.lte]: Time,
         },
-        order: [['gType', 'ASC']],
-      })
-      if ( !data ) {
-        return
+        time_end: {
+          [Op.gte]: Time,
+        },
+      },
+      order: [['gType', 'ASC']],
+    })
+    if ( !data ) {
+      return
+    }
+    for (let index = 0 ; index < data.length; index++) {
+      const { prize_data,id } = data[index].dataValues
+      if (prize_data.length < 7) {
+        continue
       }
-      for (let index = 0 ; index < data.length; index++) {
-        const { prize_data,id } = data[index].dataValues
-        if (prize_data.length < 7) {
-          continue
+      const item = JSON.parse(prize_data)
+      let giftNum = 0
+      for (const key in item) {
+        const time = new Date(key)
+        if (time < Time) {
+          giftNum += item[key]
+          delete item[key]
+        }else {
+          break
         }
-        const item = JSON.parse(prize_data)
-        let giftNum = 0
-        for (const key in item) {
-          const time = new Date(key)
-          if (time < Time) {
-            giftNum += item[key]
-            delete item[key]
-          }else {
-            break
+      }
+      //更新奖品池子
+      if (giftNum > 0) {
+        const rs = await ctx.redis.hincrby('Pool',id, giftNum)
+        if (rs < giftNum) {
+          console.log(`奖品发多了,已经补货了${giftNum-rs}`)
+          await ctx.redis.hincrby('Pool',id, giftNum-rs)
+        }
+        // 发奖计划更新数据库
+        const pData = JSON.stringify(item)
+        await Prize.update({prize_data: pData}, {
+          where: {
+            id
           }
-        }
-        //更新奖品池子
-        if (giftNum > 0) {
-          // const rs = ctx.redis.hincrby('Pool',id, giftNum)
-          const rsData = await ctx.redis.hget('Pool',id)
-          // 发奖计划更新数据库
-          const pData = JSON.stringify(item)
-          await Prize.update({prize_data: pData}, {
-            where: {
-              id
-            }
-          })
-        }
+        })
       }
+    }
+    console.log(1111,this)
   }
-
 }
 
 module.exports = new prizeService()
