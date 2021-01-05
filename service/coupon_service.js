@@ -57,18 +57,17 @@ class couponService {
         if (data <= 0) {
           throw new successExpection('没有中奖，谢谢参与')
         }
-        await ctx.redis.spop('allSet')
-        const Mqdata = await Coupon.findOne({
-          where: {
-            status: 0,
-          },
-        })
-        if (!Mqdata) {
-          throw new successExpection('没有中奖，谢谢参与')
+        const item =  await ctx.redis.spop('allSet')
+        if (!item) {
+          const Mqdata = await Coupon.findOne({
+            where: {
+              status: 0,
+            },
+          })
+          if (!Mqdata) {
+            throw new successExpection('没有中奖，谢谢参与')
+          }
         }
-        Mqdata.update({
-          status: 2,
-        })
         switchData(2)
         prizeService.upData(ctx)
         break

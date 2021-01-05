@@ -10,7 +10,7 @@ class Token {
         level: 1,
       },
       tokenKey,
-      { expiresIn: '2h' }
+      { expiresIn: '20h' }
     )
     ctx.redis.set('token', token)
     return token

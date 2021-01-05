@@ -11,6 +11,7 @@ const {
 const prizeService = require('../service/prize_service')
 const couponService = require('../service/coupon_service')
 const { Op } = require('sequelize')
+const dayjs = require('dayjs')
 
 class PrizeContructor {
   async getList(ctx) {
@@ -43,10 +44,11 @@ class PrizeContructor {
     if (gType === 'virtual_volume') {
       couponService.createData(ctx, item.dataValues.id, prize_num)
     }
-
-    prizeService.upData(ctx)
+    //缓存奖品数据
+    await prizeService.setRData(ctx)
     throw new successExpection()
   }
+
   async upData(ctx) {
     const { title, prize_num } = ctx.v
     const data = ctx.params
@@ -68,6 +70,12 @@ class PrizeContructor {
     }
     const it = await Prize.beforeUpdate((h) => {
       prizeService.resetPrizeData(h)
+      if (h.dataValues.time_begin !== h._previousDataValues.time_begin) {
+        const {time_begin, prize_time} = h.dataValues
+        let time = dayjs(time_begin)
+        time =  time.add(prize_time, 'day')
+        h.dataValues.time_end = time
+      }
     })
     it.update(ctx.v, {
       where: {
@@ -86,7 +94,8 @@ class PrizeContructor {
         }
       }
     })
-    prizeService.upData(ctx)
+    //缓存奖品数
+    await prizeService.setRData(ctx)
     throw new successExpection()
   }
   //删除
@@ -105,7 +114,7 @@ class PrizeContructor {
         throw new idExpection()
       }
     })
-    prizeService.upData(ctx)
+    await prizeService.setRData(ctx)
     throw new successExpection()
   }
 }

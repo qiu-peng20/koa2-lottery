@@ -3,6 +3,8 @@ const Joi = require('joi')
 const { prizeExpection } = require('../util/httpExpection')
 const {houseData} = require('../config/configDefault')
 const dayjs = require('dayjs')
+const { Op } = require('sequelize')
+const Time = require('../cora/getDate')
 
 const db = require('../models/index')
 
@@ -63,12 +65,35 @@ class prizeService {
       return
     }
   }
+  // 缓存奖品数据 
+  async setRData(ctx) {
+    const prizeList = []
+    const list = await Prize.findAll({
+      where: {
+        sys_status: 'normal',
+        time_begin: {
+          [Op.lte]: Time,
+        },
+        time_end: {
+          [Op.gte]: Time,
+        },
+      },
+      order: [['gType', 'ASC']],
+    })
+    list.forEach((item) => {
+       prizeList.push(item.dataValues)
+    })
+    await this.setData(ctx, prizeList)
+    return prizeList
+  }
+  
   async upData(ctx) {
     await ctx.redis.del('allList')
   }
   // 重置发奖计划
   async resetPrizeData(data) {
     const {prize_num, left_num, prize_time, time_begin} = data.dataValues
+    data.dataValues.prize_data = JSON.stringify(this.newHash)
     if (prize_num <0 || left_num<0 ){
       return
     }
@@ -113,6 +138,56 @@ class prizeService {
       this.newHash[item] += 1
     }
   }
+  //设置奖品池
+  async setPrizePool(ctx) {
+      let totalNum = 0
+      
+      const data  = await Prize.findAll({
+        where: {
+          sys_status: 'normal',
+          time_begin: {
+            [Op.lte]: Time,
+          },
+          time_end: {
+            [Op.gte]: Time,
+          },
+        },
+        order: [['gType', 'ASC']],
+      })
+      if ( !data ) {
+        return
+      }
+      for (let index = 0 ; index < data.length; index++) {
+        const { prize_data,id } = data[index].dataValues
+        if (prize_data.length < 7) {
+          continue
+        }
+        const item = JSON.parse(prize_data)
+        let giftNum = 0
+        for (const key in item) {
+          const time = new Date(key)
+          if (time < Time) {
+            giftNum += item[key]
+            delete item[key]
+          }else {
+            break
+          }
+        }
+        //更新奖品池子
+        if (giftNum > 0) {
+          // const rs = ctx.redis.hincrby('Pool',id, giftNum)
+          const rsData = await ctx.redis.hget('Pool',id)
+          // 发奖计划更新数据库
+          const pData = JSON.stringify(item)
+          await Prize.update({prize_data: pData}, {
+            where: {
+              id
+            }
+          })
+        }
+      }
+  }
+
 }
 
 module.exports = new prizeService()
