@@ -18,7 +18,16 @@ class PrizeContructor {
     const list = await Prize.findAll()
     ctx.body = list
   }
-  async getDetail(ctx) {}
+  async getDetail(ctx) {
+    const { id } = ctx.request.params
+    const data = await Prize.findOne({
+      where: {
+        id,
+      },
+    })
+    console.log(typeof data.dataValues.prize_data)
+    ctx.body = data
+  }
   async createData(ctx) {
     await prizeService.checkPrize(ctx) //初步检测
     const { title, prize_num, prize_time, time_begin, gType } = ctx.v
@@ -71,9 +80,9 @@ class PrizeContructor {
     const it = await Prize.beforeUpdate((h) => {
       prizeService.resetPrizeData(h)
       if (h.dataValues.time_begin !== h._previousDataValues.time_begin) {
-        const {time_begin, prize_time} = h.dataValues
+        const { time_begin, prize_time } = h.dataValues
         let time = dayjs(time_begin)
-        time =  time.add(prize_time, 'day')
+        time = time.add(prize_time, 'day')
         h.dataValues.time_end = time
       }
     })

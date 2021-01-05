@@ -6,8 +6,6 @@ const { Coupon } = db.sequelize.models
 const { successExpection } = require('../util/httpExpection')
 const { prizeExpection } = require('../util/httpExpection')
 const switchData = require('../cora/switch')
-const prizeService = require('../service/prize_service')
-const { sequelize } = require('../models/index')
 
 class couponService {
   async checkCoupon(ctx, next) {
@@ -57,27 +55,22 @@ class couponService {
         if (data <= 0) {
           throw new successExpection('没有中奖，谢谢参与')
         }
-        const item =  await ctx.redis.spop('allSet')
-        if (!item) {
-          const Mqdata = await Coupon.findOne({
+        const id = await ctx.redis.spop('allSet')
+        await Coupon.update(
+          { status: 2 },
+          {
             where: {
-              status: 0,
+              id,
             },
-          })
-          if (!Mqdata) {
-            throw new successExpection('没有中奖，谢谢参与')
           }
-        }
-        switchData(2)
-        prizeService.upData(ctx)
+        )
+        switchData(2, ctx)
         break
       case 0:
-        switchData(0)
-        prizeService.upData(ctx)
+        switchData(0, ctx)
         break
       case 1:
-        switchData(1)
-        prizeService.upData(ctx)
+        switchData(1, ctx)
         break
     }
 
