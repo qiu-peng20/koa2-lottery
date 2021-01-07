@@ -1,25 +1,43 @@
-const Joi = require('joi')
-
-const { loginExpection } = require('../util/httpExpection')
+const { loginExpection ,createExpection} = require('../util/httpExpection')
 const Token = require('../util/token')
+
+const db = require('../models/index')
+const { Users } = db.sequelize.models
 
 class SessionConstructor {
   async login(ctx) {
     const { name, password } = ctx.request.body
-    const scheme = Joi.object().keys({
-      name: Joi.string().alphanum().min(4).max(20).required(),
-      password: Joi.string().regex(/^[A-Z]/),
+    const data = await Users.findOne({
+      where: {
+        name
+      }
     })
-    if (name !== 'test1') {
+    if (!data) {
       throw new loginExpection()
     }
-    if (password !== 'A123456') {
-      throw new loginExpection('密码不正确', 10003)
+    if (password !== data.dataValues.password) {
+      throw new createExpection('用户密码不正确',10009)
     }
-    const token = Token.setToken(ctx)
+    const token = await Token.setToken(ctx,data.dataValues.id)
     ctx.body = {
       token,
     }
+  }
+  async create(ctx) {
+    const { name, password } = ctx.request.body
+    const data =  await Users.findOne({
+      where: {
+        name
+      }
+    })
+    if (data) {
+      throw new createExpection()
+    }
+    const user = await Users.create({
+      name,
+      password
+    })
+    ctx.body = user
   }
 }
 

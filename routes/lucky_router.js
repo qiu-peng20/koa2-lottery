@@ -1,5 +1,6 @@
 const router = require('koa-router')()
 
+const Token = require('../util/token')
 const luckyConstructor = require('../constructor/lucky_constructor')
 const ipBlacklistService = require('../service/ip_blacklist_service')
 const usersignService = require('../service/usersign_service')
@@ -9,6 +10,8 @@ const recodingsService = require('../service/recodings_service')
 const couponService = require('../service/coupon_service')
 
 router.prefix('/lucky')
+
+router.use(Token.checkToken)
 
 //用户参与次数验证
 router.use(usersignService.checkUser)

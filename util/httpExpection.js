@@ -7,6 +7,12 @@ class httpExpection extends Error {
   }
 }
 
+class createExpection extends httpExpection {
+  constructor(msg='该用户已经被注册了', errorCode = 10002, status = 400) {
+    super(msg, errorCode, status)
+  }
+}
+
 class loginExpection extends httpExpection {
   constructor(msg = '找不到该用户', errorCode = 10001, status = 404) {
     super(msg, errorCode, status)
@@ -65,4 +71,5 @@ module.exports = {
   prizeExpection,
   successExpection,
   idExpection,
+  createExpection 
 }

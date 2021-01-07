@@ -73,11 +73,8 @@ class couponService {
         switchData(1, ctx)
         break
     }
-
     await next()
   }
-
-  async findCoupon(ctx, next) {}
 }
 
 module.exports = new couponService()

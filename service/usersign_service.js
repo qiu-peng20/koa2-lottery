@@ -29,10 +29,17 @@ class usersignService {
         throw new userExpection()
       }
     }
-    
     await next()
+    await ctx.redis.hincrby('allUser',user_id)
     ctx.body = {
       title: `恭喜中奖，奖品为${ctx.it.title}`,
+    }
+  }
+
+  async removeAllUser(ctx) {
+    const array =  await ctx.redis.hkeys('allUser')
+    for (let index = 0; index < array.length; index++) {
+      await ctx.redis.hdel('allUser',array[index])
     }
   }
 }

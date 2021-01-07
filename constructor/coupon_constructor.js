@@ -1,8 +1,6 @@
 const db = require('../models/index')
 
-const { Coupon, Prize } = db.sequelize.models
-
-const couponService = require('../service/coupon_service')
+const { Coupon } = db.sequelize.models
 
 class couponConstructor {
 
