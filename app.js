@@ -1,6 +1,5 @@
 const Koa = require('koa')
 const checkError = require('./util/check')
-
 const initProject = require('./util/init')
 
 const app = new Koa()

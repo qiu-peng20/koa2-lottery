@@ -9,6 +9,7 @@ async function checkError(ctx, next) {
       ctx.body = {
         mag: error.msg,
         errorCode: error.errorCode,
+        index: error.index? error.index: 0,
         require: `${ctx.method} ${ctx.path}`,
       }
       ctx.status = error.status

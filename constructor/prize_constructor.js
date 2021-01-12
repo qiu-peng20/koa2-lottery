@@ -15,7 +15,9 @@ const dayjs = require('dayjs')
 
 class PrizeContructor {
   async getList(ctx) {
-    const list = await Prize.findAll()
+    const list = await Prize.findAll({
+      attributes: ['title','displayOrder']
+    })
     ctx.body = list
   }
   async getDetail(ctx) {

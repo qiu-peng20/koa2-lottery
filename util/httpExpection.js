@@ -52,6 +52,7 @@ class prizeExpection extends httpExpection {
 class successExpection extends httpExpection {
   constructor(msg = '请求成功') {
     super(msg, 66666, 200)
+    this.index = 0
   }
 }
 

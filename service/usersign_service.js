@@ -30,9 +30,10 @@ class usersignService {
       }
     }
     await next()
-    await ctx.redis.hincrby('allUser',user_id)
+    await ctx.redis.hincrby('allUser',user_id,1)
     ctx.body = {
       title: `恭喜中奖，奖品为${ctx.it.title}`,
+      index: ctx.it.displayOrder
     }
   }
 
